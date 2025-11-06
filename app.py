@@ -14,6 +14,10 @@ from functools import wraps
 import threading
 import time
 import random
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # QR Code generation
 import qrcode
@@ -33,7 +37,15 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize extensions
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-CORS(app, origins="*")
+
+# CORS configuration - use environment variable or default to *
+cors_origins = os.environ.get('CORS_ORIGINS', '*')
+if cors_origins == '*':
+    CORS(app, origins="*")
+else:
+    # Allow comma-separated list of origins
+    origins_list = [origin.strip() for origin in cors_origins.split(',')]
+    CORS(app, origins=origins_list)
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -289,8 +301,8 @@ class LabelGenerator:
             'manufacturing_date': product.manufacturing_date.isoformat() if product.manufacturing_date else None,
             'expiry_date': product.expiry_date.isoformat() if product.expiry_date else None,
             'manufacturer': product.manufacturer,
-            # UPDATED: Use local server address for trace_url
-            'trace_url': f'http://localhost:5000/product/{product.id}'
+            # Use environment variable for backend URL or default to localhost
+            'trace_url': f"{os.environ.get('BACKEND_URL', 'http://localhost:5000')}/product/{product.id}"
         }
         # Only encode the trace_url in the QR code
         label_data_str = label_data['trace_url']
@@ -1306,7 +1318,10 @@ def create_tables():
 if __name__ == '__main__':
     # Create tables when the app starts
     create_tables()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Use environment variable for port (required by most hosting platforms)
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV', 'development') == 'development'
+    app.run(debug=debug, host='0.0.0.0', port=port)
 
 @app.route('/product/<product_id>', methods=['GET'])
 def product_details_page(product_id):

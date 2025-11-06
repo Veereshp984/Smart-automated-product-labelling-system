@@ -153,6 +153,31 @@ To switch between modes:
 * Scan QR codes at any point in the supply chain to access product details and update workflow status.
 * Use the analytics dashboard to monitor product movement, quality checks, and compliance.
 
+## Deployment
+
+### Quick Start
+
+For the fastest deployment, see [QUICK_DEPLOY.md](./QUICK_DEPLOY.md)
+
+### Full Guide
+
+For detailed deployment instructions including multiple platform options, see [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+### Quick Summary
+
+1. **Backend**: Deploy to Railway/Render/Heroku
+   - Set `SECRET_KEY`, `DATABASE_URL`, `FLASK_ENV=production`
+   - Add PostgreSQL database
+   - Deploy using `gunicorn app:app`
+
+2. **Frontend**: Deploy to Vercel/Netlify
+   - Set `REACT_APP_API_BASE` to your backend URL
+   - Build and deploy
+
+3. **Update Backend**:
+   - Set `CORS_ORIGINS` to your frontend URL
+   - Set `BACKEND_URL` to your backend URL (for QR codes)
+
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request for review.

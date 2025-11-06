@@ -13,3 +13,6 @@ python-barcode==0.15.1
 
 # Additional utilities
 requests==2.31.0
+
+# Production server
+gunicorn==21.2.0
